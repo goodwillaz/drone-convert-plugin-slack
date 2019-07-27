@@ -1,0 +1,38 @@
+{
+  "name": "drone-config-plugin-slack",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "lint": "standard src/**/*.js",
+    "test": "mocha --require @babel/register --reporter dot",
+    "build": "babel --delete-dir-on-start -d dist src",
+    "run": "nodemon --exec babel-node src/main.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MPL-2.0",
+  "dependencies": {
+    "convict": "^5.0.0",
+    "express": "^4.17.1",
+    "express-async-errors": "^3.1.1",
+    "github-api": "^3.2.2",
+    "http-signature": "^1.2.0",
+    "js-yaml": "^3.13.1",
+    "winston": "^3.2.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.5.5",
+    "@babel/node": "^7.5.5",
+    "@babel/plugin-transform-runtime": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/register": "^7.5.5",
+    "babel-plugin-transform-es2015-modules-simple-commonjs": "^0.3.0",
+    "chai": "^4.2.0",
+    "chai-spies": "^1.0.0",
+    "mocha": "^6.2.0",
+    "nodemon": "^1.19.1",
+    "standard": "^13.1.0"
+  }
+}
