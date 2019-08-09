@@ -98,15 +98,21 @@ class Plugin {
         return documents.push(doc)
       }
 
-      if ((this.when === 'before' || this.when === 'both') && !this.hasNotifyStep(doc, 'before')) {
+      if (this.addStep(doc, 'before')) {
         doc.steps.unshift(this.getSlackStep('before'));
       }
-      if ((this.when === 'after' || this.when === 'both') && !this.hasNotifyStep(doc, 'after')) {
+      if (this.addStep(doc, 'after')) {
         doc.steps.push(this.getSlackStep('after'));
       }
 
       documents.push(doc)
     }
+  }
+
+  addStep (doc, where) {
+    return [where, 'both'].includes(this.when) // Is plugin configured to do this action
+      && (!doc.hasOwnProperty('slack') || [true, where, 'both'].includes(doc.slack)) // If we have a slack option in the doc, what does it say?
+      && !this.hasNotifyStep(doc, where) // Does it already have a step
   }
 
   hasNotifyStep (doc, when) {
