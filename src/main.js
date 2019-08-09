@@ -18,12 +18,12 @@ import logger from './lib/logger'
 import handler from './handler'
 import Plugin from './plugin'
 
-let config;
+let config
 try {
-  config = require('./config/config');
+  config = require('./config/config')
 } catch (e) {
-  logger.error(e);
-  process.exit(1);
+  logger.error(e)
+  process.exit(1)
 }
 
 // Handle term signals

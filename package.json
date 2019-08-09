@@ -4,7 +4,7 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "lint": "standard src/**/*.js",
+    "lint": "standard src/*.js src/**/*.js",
     "test": "mocha --require @babel/register --reporter dot",
     "build": "babel --delete-dir-on-start -d dist src",
     "run": "nodemon --exec babel-node src/main.js"

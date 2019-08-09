@@ -19,7 +19,7 @@ import { safeLoadAll as yamlParse, safeDump as yamlDump } from 'js-yaml'
 import logger from './lib/logger'
 
 class Plugin {
-  constructor ({debug, token, image, when}) {
+  constructor ({ debug, token, image, when }) {
     this.debug = debug
     this.image = image
     this.when = when
@@ -40,10 +40,10 @@ class Plugin {
 
     logger.debug({ slack: environment })
 
-    return environment;
+    return environment
   }
 
-  getSlackStep(when) {
+  getSlackStep (when) {
     const environment = Object.assign({}, this.slackEnv)
 
     if (when === 'before') {
@@ -87,9 +87,9 @@ class Plugin {
     return modifiedYaml
   }
 
-  async getDroneYaml({repo: { namespace, name, config_path }, build: { after: afterHash }}) {
-    const response = await this.gh.getRepo(namespace, name).getContents(afterHash, config_path, true)
-    return response.data;
+  async getDroneYaml ({ repo: { namespace, name, config_path: configPath }, build: { after: afterHash } }) {
+    const response = await this.gh.getRepo(namespace, name).getContents(afterHash, configPath, true)
+    return response.data
   }
 
   docProcessor (documents) {
@@ -99,10 +99,10 @@ class Plugin {
       }
 
       if (this.addStep(doc, 'before')) {
-        doc.steps.unshift(this.getSlackStep('before'));
+        doc.steps.unshift(this.getSlackStep('before'))
       }
       if (this.addStep(doc, 'after')) {
-        doc.steps.push(this.getSlackStep('after'));
+        doc.steps.push(this.getSlackStep('after'))
       }
 
       documents.push(doc)
@@ -110,9 +110,9 @@ class Plugin {
   }
 
   addStep (doc, where) {
-    return [where, 'both'].includes(this.when) // Is plugin configured to do this action
-      && (!doc.hasOwnProperty('slack') || [true, where, 'both'].includes(doc.slack)) // If we have a slack option in the doc, what does it say?
-      && !this.hasNotifyStep(doc, where) // Does it already have a step
+    return [where, 'both'].includes(this.when) && // Is plugin configured to do this action
+      (!Object.prototype.hasOwnProperty.call(doc, 'slack') || [true, where, 'both'].includes(doc.slack)) && // If we have a slack option in the doc, what does it say?
+      !this.hasNotifyStep(doc, where) // Does it already have a step
   }
 
   hasNotifyStep (doc, when) {
