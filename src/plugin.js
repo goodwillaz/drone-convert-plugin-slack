@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import GitHub from 'github-api'
-import { safeLoadAll as yamlParse, safeDump as yamlDump } from 'js-yaml'
-import logger from './lib/logger'
+import GitHub from 'github-api';
+import { safeLoadAll as yamlParse, safeDump as yamlDump } from 'js-yaml';
+import logger from './lib/logger';
 
 class Plugin {
   constructor ({ debug, token, image, when }) {
-    this.debug = debug
-    this.image = image
-    this.when = when
-    this.gh = new GitHub({ token })
-    this.slackEnv = this.getSlackEnv()
+    this.debug = debug;
+    this.image = image;
+    this.when = when;
+    this.gh = new GitHub({ token });
+    this.slackEnv = this.getSlackEnv();
   }
 
   getSlackEnv () {
@@ -36,18 +36,18 @@ class Plugin {
       .reduce(
         (res, key) => Object.assign(res, { [key.replace(/^SLACK_/, 'PLUGIN_')]: process.env[key] }),
         {} // Initial value, needs to be an empty object
-      )
+      );
 
-    logger.debug({ slack: environment })
+    logger.debug({ slack: environment });
 
-    return environment
+    return environment;
   }
 
   getSlackStep (when) {
-    const environment = Object.assign({}, this.slackEnv)
+    const environment = Object.assign({}, this.slackEnv);
 
     if (when === 'before') {
-      environment.PLUGIN_STARTED = true
+      environment.PLUGIN_STARTED = true;
     }
 
     return {
@@ -57,67 +57,67 @@ class Plugin {
       when: {
         status: ['success', 'failure']
       }
-    }
+    };
   }
 
   async find (req) {
-    logger.debug({ req })
+    logger.debug({ req });
 
-    let yaml
+    let yaml;
     try {
       // Are we pipelined from another plugin, if not get the original config file; return null if it can't be found
-      yaml = req.yaml || await this.getDroneYaml(req)
-      logger.debug({ yaml })
+      yaml = req.yaml || await this.getDroneYaml(req);
+      logger.debug({ yaml });
     } catch (err) {
-      logger.warn(err)
-      return null
+      logger.warn(err);
+      return null;
     }
 
     // Parse the yaml (could be multiple documents in one file)
-    const documents = []
-    yamlParse(yaml, this.docProcessor(documents))
+    const documents = [];
+    yamlParse(yaml, this.docProcessor(documents));
 
     // Return the modified yaml
     const modifiedYaml = '---\n' +
       documents
         .map(doc => yamlDump(doc, { noRefs: true, lineWidth: 500 }))
-        .join('\n---\n')
-    logger.debug({ modifiedYaml })
+        .join('\n---\n');
+    logger.debug({ modifiedYaml });
 
-    return modifiedYaml
+    return modifiedYaml;
   }
 
   async getDroneYaml ({ repo: { namespace, name, config_path: configPath }, build: { after: afterHash } }) {
-    const response = await this.gh.getRepo(namespace, name).getContents(afterHash, configPath, true)
-    return response.data
+    const response = await this.gh.getRepo(namespace, name).getContents(afterHash, configPath, true);
+    return response.data;
   }
 
   docProcessor (documents) {
     return (doc) => {
       if (doc.kind !== 'pipeline') {
-        return documents.push(doc)
+        return documents.push(doc);
       }
 
       if (this.addStep(doc, 'before')) {
-        doc.steps.unshift(this.getSlackStep('before'))
+        doc.steps.unshift(this.getSlackStep('before'));
       }
       if (this.addStep(doc, 'after')) {
-        doc.steps.push(this.getSlackStep('after'))
+        doc.steps.push(this.getSlackStep('after'));
       }
 
-      documents.push(doc)
-    }
+      documents.push(doc);
+    };
   }
 
   addStep (doc, where) {
     return [where, 'both'].includes(this.when) && // Is plugin configured to do this action
       (!Object.prototype.hasOwnProperty.call(doc, 'slack') || [true, where, 'both'].includes(doc.slack)) && // If we have a slack option in the doc, what does it say?
-      !this.hasNotifyStep(doc, where) // Does it already have a step
+      !this.hasNotifyStep(doc, where); // Does it already have a step
   }
 
   hasNotifyStep (doc, when) {
-    return doc.steps.filter(step => step.name === `notify-${when}`).length > 0
+    return doc.steps.filter(step => step.name === `notify-${when}`).length > 0;
   }
 }
 
-export default Plugin
+export default Plugin;
