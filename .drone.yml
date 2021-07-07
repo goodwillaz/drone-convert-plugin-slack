@@ -1,7 +1,8 @@
 ---
 kind: pipeline
 name: testing
-slack: false
+slack:
+  when: false
 
 steps:
   - name: test
