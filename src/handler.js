@@ -14,44 +14,44 @@
  * limitations under the License.
  */
 
-import express from 'express'
-import { parseRequest, verifyHMAC } from 'http-signature'
+import express from 'express';
+import { parseRequest, verifyHMAC } from 'http-signature';
 
-require('express-async-errors')
+require('express-async-errors');
 
 const validator = secret => (req, res, next) => {
-  const { signature, authorization } = req.headers
+  const { signature, authorization } = req.headers;
   if (signature && !authorization) {
-    req.headers.authorization = `Signature ${req.headers.signature}`
+    req.headers.authorization = `Signature ${req.headers.signature}`;
   }
 
   if (!verifyHMAC(parseRequest(req), secret)) {
-    throw new Error('Authorization header is not valid')
+    throw new Error('Authorization header is not valid');
   }
 
-  next()
-}
+  next();
+};
 
 export default function (plugin, secret, logger) {
-  const app = express()
+  const app = express();
 
   // Setup some middleware to assist with the requests
-  app.use(validator(secret))
-  app.use(express.json())
+  app.use(validator(secret));
+  app.use(express.json());
 
   app.post('/', async (req, res) => {
-    logger.debug(req.body)
+    logger.debug(req.body);
 
-    const yaml = await plugin.find(req.body)
+    const yaml = await plugin.find(req.body);
 
     if (yaml === null) {
-      logger.debug({ yaml: false })
-      res.status(204).send()
-      return
+      logger.debug({ yaml: false });
+      res.status(204).send();
+      return;
     }
 
-    res.set('Content-Type', 'application/json').send({ Data: yaml })
-  })
+    res.set('Content-Type', 'application/json').send({ Data: yaml });
+  });
 
-  return app
-};
+  return app;
+}

@@ -4,7 +4,7 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "lint": "standard src/*.js src/**/*.js",
+    "lint": "semistandard src/*.js src/**/*.js",
     "test": "mocha --require @babel/register --reporter dot",
     "build": "babel --delete-dir-on-start -d dist src",
     "run": "nodemon --exec babel-node src/main.js"
@@ -33,6 +33,6 @@
     "chai-spies": "^1.0.0",
     "mocha": "^6.2.0",
     "nodemon": "^1.19.1",
-    "standard": "^13.1.0"
+    "semistandard": "^16.0.1"
   }
 }

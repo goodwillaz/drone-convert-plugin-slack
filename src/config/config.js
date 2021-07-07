@@ -1,4 +1,4 @@
-import convict from 'convict'
+import convict from 'convict';
 
 const config = convict({
   debug: {
@@ -50,9 +50,9 @@ const config = convict({
     arg: 'when',
     env: 'PLUGIN_WHEN'
   }
-})
+});
 
 // Perform validation
-config.validate({ allowed: 'strict' })
+config.validate({ allowed: 'strict' });
 
-export default config.getProperties()
+export default config.getProperties();

@@ -14,29 +14,28 @@
  * limitations under the License.
  */
 
-import logger from './lib/logger'
-import handler from './handler'
-import Plugin from './plugin'
+import logger from './lib/logger';
+import handler from './handler';
+import Plugin from './plugin';
 
-let config
+let config;
 try {
-  config = require('./config/config')
+  config = require('./config/config');
 } catch (e) {
-  logger.error(e)
-  process.exit(1)
+  logger.error(e);
+  process.exit(1);
 }
 
 // Handle term signals
-process
-  .on('SIGINT', () => process.exit())
-  .on('SIGTERM', () => process.exit())
+process.on('SIGINT', () => process.exit());
+process.on('SIGTERM', () => process.exit());
 
 if (config.debug) {
-  logger.level = 'debug'
+  logger.level = 'debug';
 }
 
-logger.debug(config)
+logger.debug(config);
 
-const server = handler(new Plugin(config), config.secret, logger)
+const server = handler(new Plugin(config), config.secret, logger);
 
-server.listen(config.port, config.host)
+server.listen(config.port, config.host);
