@@ -15,7 +15,7 @@
  */
 
 import GitHub from 'github-api';
-import { safeLoadAll as yamlParse, safeDump as yamlDump } from 'js-yaml';
+import { loadAll as yamlParse, dump as yamlDump } from 'js-yaml';
 import logger from './lib/logger';
 
 class Plugin {
@@ -43,11 +43,16 @@ class Plugin {
     return environment;
   }
 
-  getSlackStep (when) {
+  getSlackStep (when, webhook) {
     const environment = Object.assign({}, this.slackEnv);
 
     if (when === 'before') {
       environment.PLUGIN_STARTED = true;
+    }
+
+    // Custom webhook URL specified in the document
+    if (webhook) {
+      environment.PLUGIN_WEBHOOK = webhook;
     }
 
     return {
@@ -99,10 +104,10 @@ class Plugin {
       }
 
       if (this.addStep(doc, 'before')) {
-        doc.steps.unshift(this.getSlackStep('before'));
+        doc.steps.unshift(this.getSlackStep('before', doc.slack?.webhook ?? false));
       }
       if (this.addStep(doc, 'after')) {
-        doc.steps.push(this.getSlackStep('after'));
+        doc.steps.push(this.getSlackStep('after', doc.slack?.webhook ?? false));
       }
 
       documents.push(doc);
@@ -111,7 +116,7 @@ class Plugin {
 
   addStep (doc, where) {
     return [where, 'both'].includes(this.when) && // Is plugin configured to do this action
-      (!Object.prototype.hasOwnProperty.call(doc, 'slack') || [true, where, 'both'].includes(doc.slack)) && // If we have a slack option in the doc, what does it say?
+      ([true, where, 'both'].includes(doc.slack?.when ?? true)) && // If we have a slack option in the doc, what does it say?
       !this.hasNotifyStep(doc, where); // Does it already have a step
   }
 
