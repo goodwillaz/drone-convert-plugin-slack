@@ -39,7 +39,7 @@ services:
 
 #### .drone.yml file
 
-You can add a global `slack` option to your pipeline in your .drone.yml to override some items.  Both of these are optional.  The `when` option accepts `true`, `'after'`, `'before'` and `'both'`.  The `webhook` option can be used to specify an alternate location to post Slack messages to (instead of the SLACK_WEBHOOK environment variable)
+You can add a global `slack` option to your pipeline in your .drone.yml to override some items.  Both of these are optional.  The `when` option accepts `false`, `true`, `'after'`, `'before'` and `'both'`.  The `webhook` option can be used to specify an alternate location to post Slack messages to (instead of the SLACK_WEBHOOK environment variable)
 
 ```yaml
 ---
