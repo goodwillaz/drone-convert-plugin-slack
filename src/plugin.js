@@ -43,7 +43,7 @@ class Plugin {
     return environment;
   }
 
-  getSlackStep (where, webhook) {
+  getSlackStep (when, where, webhook) {
     const environment = Object.assign({}, this.slackEnv);
 
     if (where === 'before') {
@@ -55,12 +55,15 @@ class Plugin {
       environment.PLUGIN_WEBHOOK = webhook;
     }
 
+    // If we have these in the doc, use it, otherwise default to success and failure
+    when = when ?? ['success', 'failure'];
+
     return {
       name: `slack-${where}`,
       image: this.image,
       environment,
       when: {
-        status: ['success', 'failure']
+        status: when
       }
     };
   }
@@ -104,10 +107,10 @@ class Plugin {
       }
 
       if (this.addStep(doc, 'before')) {
-        doc.steps.unshift(this.getSlackStep('before', doc.slack?.webhook ?? false));
+        doc.steps.unshift(this.getSlackStep(['success'], 'before', doc.slack?.webhook ?? null));
       }
       if (this.addStep(doc, 'after')) {
-        doc.steps.push(this.getSlackStep('after', doc.slack?.webhook ?? false));
+        doc.steps.push(this.getSlackStep(doc.slack?.when ?? null, 'after', doc.slack?.webhook ?? null));
       }
 
       documents.push(doc);

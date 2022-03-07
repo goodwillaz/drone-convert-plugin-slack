@@ -39,7 +39,7 @@ services:
 
 #### .drone.yml file
 
-You can add a global `slack` option to your pipeline in your .drone.yml to override some items.  Both of these are optional.  The `where` option accepts `false`, `true`, `'after'`, `'before'` and `'both'`.  The `webhook` option can be used to specify an alternate location to post Slack messages to (instead of the SLACK_WEBHOOK environment variable)
+You can add a global `slack` option to your pipeline in your .drone.yml to override some items.  These are optional.  The `where` option accepts `false`, `true`, `'after'`, `'before'` and `'both'`.  The `webhook` option can be used to specify an alternate location to post Slack messages to (instead of the SLACK_WEBHOOK environment variable).  The `when` option can be used to specify when to trigger the `slack-after` step (only accepted values are `success` and `failure`).  If you only want failure notifications, set `where` to `after` and set `when` to an array with one element of `failure`.
 
 ```yaml
 ---
@@ -48,6 +48,9 @@ name: testing
 slack:
   where: false
   webhook: https://my.custom.slack.webhook/endpoint
+  when: 
+    - success
+    - failure
 ```
 
 #### Bypass
