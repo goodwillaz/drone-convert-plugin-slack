@@ -65,7 +65,7 @@ Here's a full list of environment variables supported by the plugin:
 * PLUGIN_GITHUB_TOKEN (required; only Github is currently supported as a source)
 * PLUGIN_HOST (default: 0.0.0.0)
 * PLUGIN_PORT (default: 3000)
-* PLUGIN_IMAGE (default: plugin/slack)
+* PLUGIN_IMAGE (default: goodwillaz/drone-slack)
 * PLUGIN_WHERE - (default: after; allowed: [before, after, both]; official Drone plugin only supports `after`, Goodwill plugin supports all options)
 * PLUGIN_DEBUG - (default: false)
 * SLACK_ - any environment variable beginning with `SLACK_` is updated to `PLUGIN_` and passed through to the actual Slack plugin.

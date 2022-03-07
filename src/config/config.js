@@ -42,7 +42,7 @@ const config = convict({
   image: {
     format: String,
     doc: 'Plugin to use',
-    default: 'plugin/slack',
+    default: 'goodwillaz/drone-slack',
     arg: 'image',
     env: 'PLUGIN_IMAGE'
   },
