@@ -46,12 +46,12 @@ const config = convict({
     arg: 'image',
     env: 'PLUGIN_IMAGE'
   },
-  when: {
+  where: {
     format: ['before', 'after', 'both'],
-    doc: 'When to apply Slack notification',
+    doc: 'Where to apply Slack notification',
     default: 'after',
-    arg: 'when',
-    env: 'PLUGIN_WHEN'
+    arg: 'where',
+    env: 'PLUGIN_WHERE'
   }
 });
 

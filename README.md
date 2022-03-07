@@ -39,14 +39,14 @@ services:
 
 #### .drone.yml file
 
-You can add a global `slack` option to your pipeline in your .drone.yml to override some items.  Both of these are optional.  The `when` option accepts `false`, `true`, `'after'`, `'before'` and `'both'`.  The `webhook` option can be used to specify an alternate location to post Slack messages to (instead of the SLACK_WEBHOOK environment variable)
+You can add a global `slack` option to your pipeline in your .drone.yml to override some items.  Both of these are optional.  The `where` option accepts `false`, `true`, `'after'`, `'before'` and `'both'`.  The `webhook` option can be used to specify an alternate location to post Slack messages to (instead of the SLACK_WEBHOOK environment variable)
 
 ```yaml
 ---
 kind: pipeline
 name: testing
 slack:
-  when: false
+  where: false
   webhook: https://my.custom.slack.webhook/endpoint
 ```
 
@@ -63,7 +63,7 @@ Here's a full list of environment variables supported by the plugin:
 * PLUGIN_HOST (default: 0.0.0.0)
 * PLUGIN_PORT (default: 3000)
 * PLUGIN_IMAGE (default: plugin/slack)
-* PLUGIN_WHEN - (default: after; allowed: [before, after, both]; official Drone plugin only supports `after`, Goodwill plugin supports all options)
+* PLUGIN_WHERE - (default: after; allowed: [before, after, both]; official Drone plugin only supports `after`, Goodwill plugin supports all options)
 * PLUGIN_DEBUG - (default: false)
 * SLACK_ - any environment variable beginning with `SLACK_` is updated to `PLUGIN_` and passed through to the actual Slack plugin.
     

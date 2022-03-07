@@ -19,10 +19,10 @@ import { loadAll as yamlParse, dump as yamlDump } from 'js-yaml';
 import logger from './lib/logger';
 
 class Plugin {
-  constructor ({ debug, token, image, when }) {
+  constructor ({ debug, token, image, where }) {
     this.debug = debug;
     this.image = image;
-    this.when = when;
+    this.where = where;
     this.gh = new GitHub({ token });
     this.slackEnv = this.getSlackEnv();
   }
@@ -43,10 +43,10 @@ class Plugin {
     return environment;
   }
 
-  getSlackStep (when, webhook) {
+  getSlackStep (where, webhook) {
     const environment = Object.assign({}, this.slackEnv);
 
-    if (when === 'before') {
+    if (where === 'before') {
       environment.PLUGIN_STARTED = true;
     }
 
@@ -56,7 +56,7 @@ class Plugin {
     }
 
     return {
-      name: `slack-${when}`,
+      name: `slack-${where}`,
       image: this.image,
       environment,
       when: {
@@ -115,13 +115,13 @@ class Plugin {
   }
 
   addStep (doc, where) {
-    return [where, 'both'].includes(this.when) && // Is plugin configured to do this action
-      ([true, where, 'both'].includes(doc.slack?.when ?? true)) && // If we have a slack option in the doc, what does it say?
+    return [where, 'both'].includes(this.where) && // Is plugin configured to do this action
+      ([true, where, 'both'].includes(doc.slack?.where ?? true)) && // If we have a slack option in the doc, what does it say?
       !this.hasSlackStep(doc, where); // Does it already have a step
   }
 
-  hasSlackStep (doc, when) {
-    return doc.steps.filter(step => step.name === `slack-${when}`).length > 0;
+  hasSlackStep (doc, where) {
+    return doc.steps.filter(step => step.name === `slack-${where}`).length > 0;
   }
 }
 
