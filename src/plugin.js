@@ -56,7 +56,7 @@ class Plugin {
     }
 
     return {
-      name: `notify-${when}`,
+      name: `slack-${when}`,
       image: this.image,
       environment,
       when: {
@@ -117,11 +117,11 @@ class Plugin {
   addStep (doc, where) {
     return [where, 'both'].includes(this.when) && // Is plugin configured to do this action
       ([true, where, 'both'].includes(doc.slack?.when ?? true)) && // If we have a slack option in the doc, what does it say?
-      !this.hasNotifyStep(doc, where); // Does it already have a step
+      !this.hasSlackStep(doc, where); // Does it already have a step
   }
 
-  hasNotifyStep (doc, when) {
-    return doc.steps.filter(step => step.name === `notify-${when}`).length > 0;
+  hasSlackStep (doc, when) {
+    return doc.steps.filter(step => step.name === `slack-${when}`).length > 0;
   }
 }
 
