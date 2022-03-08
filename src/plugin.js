@@ -16,7 +16,7 @@
 
 import GitHub from 'github-api';
 import { loadAll as yamlParse, dump as yamlDump } from 'js-yaml';
-import logger from './lib/logger';
+import logger from './lib/logger.js';
 
 class Plugin {
   constructor ({ debug, token, image, where }) {

@@ -19,11 +19,12 @@ import { createLogger, format, transports } from 'winston';
 const { combine, timestamp, printf } = format;
 
 const jsonFormat = printf(({ message, timestamp }) => {
-  if (typeof message !== 'object') {
-    message = { message };
+  let newMessage = Object.assign({}, message);
+  if (typeof newMessage !== 'object') {
+    newMessage = { newMessage };
   }
-  message.time = timestamp;
-  return JSON.stringify(message);
+  newMessage.time = timestamp;
+  return JSON.stringify(newMessage);
 });
 
 const logger = createLogger({

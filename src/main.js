@@ -14,28 +14,27 @@
  * limitations under the License.
  */
 
-import logger from './lib/logger';
-import handler from './handler';
-import Plugin from './plugin';
+import logger from './lib/logger.js';
+import handler from './handler.js';
+import Plugin from './plugin.js';
 
-let config;
-try {
-  config = require('./config/config');
-} catch (e) {
-  logger.error(e);
-  process.exit(1);
-}
+(async function () {
+  const config = await import('./config/config.js').catch((e) => {
+    logger.error(e);
+    process.exit(1);
+  });
 
-// Handle term signals
-process.on('SIGINT', () => process.exit());
-process.on('SIGTERM', () => process.exit());
+  // Handle term signals
+  process.on('SIGINT', () => process.exit());
+  process.on('SIGTERM', () => process.exit());
 
-if (config.debug) {
-  logger.level = 'debug';
-}
+  if (config.debug) {
+    logger.level = 'debug';
+  }
 
-logger.debug(config);
+  logger.debug(config);
 
-const server = handler(new Plugin(config), config.secret, logger);
+  const server = handler(new Plugin(config), config.secret, logger);
 
-server.listen(config.port, config.host);
+  server.listen(config.port, config.host);
+})();

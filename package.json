@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "main.js",
+  "type": "module",
   "scripts": {
     "lint": "semistandard src/*.js src/**/*.js",
     "test": "mocha --require @babel/register --reporter dot",

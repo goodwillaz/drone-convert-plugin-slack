@@ -15,9 +15,9 @@
  */
 
 import express from 'express';
-import { parseRequest, verifyHMAC } from 'http-signature';
-
-require('express-async-errors');
+import httpSignature from 'http-signature';
+import 'express-async-errors';
+const { parseRequest, verifyHMAC } = httpSignature;
 
 const validator = secret => (req, res, next) => {
   const { signature, authorization } = req.headers;
