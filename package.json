@@ -13,7 +13,7 @@
   "author": "",
   "license": "MPL-2.0",
   "dependencies": {
-    "convict": "^6.1.0",
+    "convict": "^6.2.3",
     "convict-format-with-validator": "^6.0.1",
     "express": "^4.17.1",
     "express-async-errors": "^3.1.1",
