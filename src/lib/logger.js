@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 Goodwill of Central and Northern Arizona
+ * Copyright 2022 Goodwill of Central and Northern Arizona
 
  * Licensed under the BSD 3-Clause (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,25 +16,21 @@
 
 import { createLogger, format, transports } from 'winston';
 
-const { combine, timestamp, printf } = format;
+const { splat, combine, timestamp, printf } = format;
 
-const jsonFormat = printf(({ message, timestamp }) => {
-  let newMessage = Object.assign({}, message);
-  if (typeof newMessage !== 'object') {
-    newMessage = { newMessage };
-  }
-  newMessage.time = timestamp;
-  return JSON.stringify(newMessage);
+const jsonFormat = printf(({ timestamp, level, message, ...meta }) => {
+  return `${timestamp};${level};${message};${meta ? JSON.stringify(meta) : ''}`;
 });
 
 const logger = createLogger({
   level: 'info',
   format: combine(
     timestamp(),
+    splat(),
     jsonFormat
   ),
   transports: [
-    new transports.Console({ handleExceptions: true, colorize: true })
+    new transports.Console({ handleExceptions: true })
   ],
   exitOnError: true
 });

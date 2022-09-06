@@ -20,7 +20,7 @@ import Plugin from './plugin.js';
 
 (async function () {
   const config = await import('./config/config.js').catch((e) => {
-    logger.error(e);
+    logger.error('Error importing configuration', e);
     process.exit(1);
   });
 
@@ -32,7 +32,7 @@ import Plugin from './plugin.js';
     logger.level = 'debug';
   }
 
-  logger.debug(config);
+  logger.debug('Configuration', config);
 
   const server = handler(new Plugin(config), config.secret, logger);
 

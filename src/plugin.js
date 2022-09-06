@@ -38,7 +38,7 @@ class Plugin {
         {} // Initial value, needs to be an empty object
       );
 
-    logger.debug({ slack: environment });
+    logger.debug('Slack environment variables', { environment });
 
     return environment;
   }
@@ -69,7 +69,7 @@ class Plugin {
   }
 
   async find (req) {
-    logger.debug({ req });
+    logger.debug('Configuration', { config });
 
     let yaml;
     try {
@@ -90,7 +90,7 @@ class Plugin {
       documents
         .map(doc => yamlDump(doc, { noRefs: true, lineWidth: 500 }))
         .join('\n---\n');
-    logger.debug({ modifiedYaml });
+    logger.debug('Modified configuration', { modifiedConfig });
 
     return modifiedYaml;
   }
