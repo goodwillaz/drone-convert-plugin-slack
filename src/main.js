@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 Goodwill of Central and Northern Arizona
+ * Copyright 2022 Goodwill of Central and Northern Arizona
 
  * Licensed under the BSD 3-Clause (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ import handler from './handler.js';
 import Plugin from './plugin.js';
 
 (async function () {
-  const config = await import('./config/config.js').catch((e) => {
+  const { default: config } = await import('./config.js').catch((e) => {
     logger.error('Error importing configuration', e);
     process.exit(1);
   });
