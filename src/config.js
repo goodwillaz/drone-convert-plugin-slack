@@ -32,13 +32,6 @@ const config = convict({
     arg: 'secret',
     env: 'PLUGIN_SECRET'
   },
-  token: {
-    format: String,
-    doc: 'Github token',
-    default: null,
-    arg: 'token',
-    env: 'PLUGIN_GITHUB_TOKEN'
-  },
   image: {
     format: String,
     doc: 'Plugin to use',

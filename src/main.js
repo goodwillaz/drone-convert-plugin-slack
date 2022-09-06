@@ -16,7 +16,6 @@
 
 import logger from './lib/logger.js';
 import handler from './handler.js';
-import Plugin from './plugin.js';
 
 (async function () {
   const { default: config } = await import('./config.js').catch((e) => {
@@ -34,7 +33,6 @@ import Plugin from './plugin.js';
 
   logger.debug('Configuration', config);
 
-  const server = handler(new Plugin(config), config.secret, logger);
-
+  const server = handler(config);
   server.listen(config.port, config.host);
 })();

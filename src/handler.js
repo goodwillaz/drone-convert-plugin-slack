@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 Goodwill of Central and Northern Arizona
+ * Copyright 2022 Goodwill of Central and Northern Arizona
 
  * Licensed under the BSD 3-Clause (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,40 +17,40 @@
 import express from 'express';
 import httpSignature from 'http-signature';
 import 'express-async-errors';
+import logger from './lib/logger.js';
+import { Plugin } from './plugin.js';
 const { parseRequest, verifyHMAC } = httpSignature;
 
 const validator = secret => (req, res, next) => {
-  const { signature, authorization } = req.headers;
-  if (signature && !authorization) {
-    req.headers.authorization = `Signature ${req.headers.signature}`;
+  if (req.path === '/ping' || verifyHMAC(parseRequest(req, {}), secret)) {
+    return next();
   }
 
-  if (!verifyHMAC(parseRequest(req), secret)) {
-    throw new Error('Authorization header is not valid');
-  }
-
-  next();
+  throw new Error('Authorization header is not valid');
 };
 
-export default function (plugin, secret, logger) {
+export default function (config) {
   const app = express();
 
   // Setup some middleware to assist with the requests
-  app.use(validator(secret));
+  app.use(validator(config.secret));
   app.use(express.json());
 
-  app.post('/', async (req, res) => {
-    logger.debug(req.body);
+  const plugin = new Plugin(config, process.env);
 
-    const yaml = await plugin.find(req.body);
+  app.get('/ping', (req, res) => {
+    logger.info('Ping');
+    res.set('Content-Type', 'text/plain').send('pong');
+  });
 
-    if (yaml === null) {
-      logger.debug({ yaml: false });
-      res.status(204).send();
-      return;
-    }
+  app.post('/', async ({ body }, res) => {
+    logger.debug('Request body', body);
 
-    res.set('Content-Type', 'application/json').send({ Data: yaml });
+    const config = plugin.run(body.config.data);
+
+    res
+      .set('Content-Type', 'application/json')
+      .send({ data: config ?? body.config.data });
   });
 
   return app;

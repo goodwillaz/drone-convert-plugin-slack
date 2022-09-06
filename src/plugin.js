@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 Goodwill of Central and Northern Arizona
+ * Copyright 2022 Goodwill of Central and Northern Arizona
 
  * Licensed under the BSD 3-Clause (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,27 +14,25 @@
  * limitations under the License.
  */
 
-import GitHub from 'github-api';
 import { loadAll as yamlParse, dump as yamlDump } from 'js-yaml';
 import logger from './lib/logger.js';
 
-class Plugin {
-  constructor ({ debug, token, image, where }) {
+export class Plugin {
+  constructor ({ debug, image, where }, env) {
     this.debug = debug;
     this.image = image;
     this.where = where;
-    this.gh = new GitHub({ token });
-    this.slackEnv = this.getSlackEnv();
+    this.slackEnv = this.getSlackEnv(env);
   }
 
-  getSlackEnv () {
-    // Get all of the environment variables ...
-    const environment = Object.keys(process.env)
+  getSlackEnv (env) {
+    // Get all the environment variables ...
+    const environment = Object.keys(env)
       // ... passed in for Slack ...
       .filter(key => key.match(/^SLACK_/))
       // ... and combine into a new object, with SLACK_ replaced with PLUGIN_
       .reduce(
-        (res, key) => Object.assign(res, { [key.replace(/^SLACK_/, 'PLUGIN_')]: process.env[key] }),
+        (res, key) => Object.assign(res, { [key.replace(/^SLACK_/, 'PLUGIN_')]: env[key] }),
         {} // Initial value, needs to be an empty object
       );
 
@@ -68,36 +66,21 @@ class Plugin {
     };
   }
 
-  async find (req) {
+  run (config) {
     logger.debug('Configuration', { config });
-
-    let yaml;
-    try {
-      // Are we pipelined from another plugin, if not get the original config file; return null if it can't be found
-      yaml = req.yaml || await this.getDroneYaml(req);
-      logger.debug({ yaml });
-    } catch (err) {
-      logger.warn(err);
-      return null;
-    }
 
     // Parse the yaml (could be multiple documents in one file)
     const documents = [];
-    yamlParse(yaml, this.docProcessor(documents));
+    yamlParse(config, this.docProcessor(documents));
 
     // Return the modified yaml
-    const modifiedYaml = '---\n' +
+    const modifiedConfig = '---\n' +
       documents
         .map(doc => yamlDump(doc, { noRefs: true, lineWidth: 500 }))
         .join('\n---\n');
     logger.debug('Modified configuration', { modifiedConfig });
 
-    return modifiedYaml;
-  }
-
-  async getDroneYaml ({ repo: { namespace, name, config_path: configPath }, build: { after: afterHash } }) {
-    const response = await this.gh.getRepo(namespace, name).getContents(afterHash, configPath, true);
-    return response.data;
+    return modifiedConfig;
   }
 
   docProcessor (documents) {
@@ -106,26 +89,29 @@ class Plugin {
         return documents.push(doc);
       }
 
-      if (this.addStep(doc, 'before')) {
-        doc.steps.unshift(this.getSlackStep(['success'], 'before', doc.slack?.webhook ?? null));
+      const webhook = doc.slack?.webhook ?? null;
+      if (this.shouldAddStep(doc, 'before')) {
+        doc.steps.unshift(this.getSlackStep(['success'], 'before', webhook));
       }
-      if (this.addStep(doc, 'after')) {
-        doc.steps.push(this.getSlackStep(doc.slack?.when ?? null, 'after', doc.slack?.webhook ?? null));
+      const when = doc.slack?.when ?? null;
+      if (this.shouldAddStep(doc, 'after')) {
+        doc.steps.push(this.getSlackStep(when, 'after', webhook));
       }
 
       documents.push(doc);
     };
   }
 
-  addStep (doc, where) {
-    return [where, 'both'].includes(this.where) && // Is plugin configured to do this action
-      ([true, where, 'both'].includes(doc.slack?.where ?? true)) && // If we have a slack option in the doc, what does it say?
-      !this.hasSlackStep(doc, where); // Does it already have a step
+  shouldAddStep (doc, where) {
+    // Is plugin configured to do this action
+    return [where, 'both'].includes(this.where) &&
+      // If we have a slack option in the doc, what does it say?
+      ([true, where, 'both'].includes(doc.slack?.where ?? true)) &&
+      // Does it already have a step
+      !this.hasSlackStep(doc, where);
   }
 
   hasSlackStep (doc, where) {
     return doc.steps.filter(step => step.name === `slack-${where}`).length > 0;
   }
 }
-
-export default Plugin;
