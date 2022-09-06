@@ -33,6 +33,8 @@ import handler from './handler.js';
 
   logger.debug('Configuration', config);
 
-  const server = handler(config);
-  server.listen(config.port, config.host);
+  handler(config).listen(config.port, config.host, err => {
+    if (err) logger.error('Error starting server', err);
+    logger.info(`Started server at http://${config.host}:${config.port}`);
+  });
 })();

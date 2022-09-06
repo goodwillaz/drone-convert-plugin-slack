@@ -1,14 +1,15 @@
 ---
 kind: pipeline
 name: testing
+type: docker
 slack:
   when: false
 
 steps:
   - name: test
-    image: node:14-alpine
+    image: node:16-alpine
     commands:
-      - npm install
+      - npm ci
       - npm run lint
       - npm run test
 
@@ -21,6 +22,7 @@ trigger:
 ---
 kind: pipeline
 name: deploy
+type: docker
 
 steps:
   - name: dry-run
