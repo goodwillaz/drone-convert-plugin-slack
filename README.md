@@ -1,14 +1,14 @@
-## Drone.io Slack Config Plugin
+## Drone.io Slack Conversion Plugin
 
-This [Drone.io](https://drone.io) config plugin automatically adds Slack notifications before and/or after the steps in a pipeline.  It will work with the [official drone-slack](https://github.com/drone-plugins/drone-slack) plugin (default) or [Goodwill's drone-slack](https://github.com/goodwillaz/drone-slack) plugin (and probably any others floating around as long as they use PLUGIN_* environment variables for configuration).  
+This [Drone.io](https://drone.io) conversion plugin automatically adds Slack notifications before and/or after the steps in a pipeline.  It will work with the [official drone-slack](https://github.com/drone-plugins/drone-slack) plugin (default) or [Goodwill's drone-slack](https://github.com/goodwillaz/drone-slack) plugin (and probably any others floating around as long as they use PLUGIN_* environment variables for configuration).  
 
 ### Running
 
-This plugin is available on [Docker Hub](https://hub.docker.com/r/goodwillaz/drone-config-plugin-slack) or you can optionally build and host yourself.
+This plugin is available via [Github's packages](https://github.com/goodwillaz/drone-convert-plugin-slack/packages) or you can optionally build and host yourself.
 
 ```bash
-$ docker build --rm -t <your-repo>/drone-config-plugin-slack:latest .
-$ drone push <your-repo>/drone-config-plugin-slack:latest
+$ docker build --rm -t <your-repo>/drone-convert-plugin-slack:latest .
+$ drone push <your-repo>/drone-convert-plugin-slack:latest
 ```
 
 ### Usage
@@ -22,15 +22,15 @@ services:
   drone-server:
     ...
     environment:
-      - DRONE_YAML_ENDPOINT=http://drone-config-plugin-slack:3000
+      - DRONE_YAML_ENDPOINT=http://drone-convert-plugin-slack:3000
       - DRONE_YAML_SECRET=${YAML_SECRET:?YAML_SECRET is required}
       ...
     depends_on:
-      - drone-config-plugin-slack
+      - drone-convert-plugin-slack
       ...
   
-  drone-config-plugin-slack:
-    image: goodwillaz/drone-config-plugin-slack:latest
+  drone-convert-plugin-slack:
+    image: goodwillaz/drone-convert-plugin-slack:latest
     environment:
       - PLUGIN_SECRET=${YAML_SECRET:?YAML_SECRET is required}
       - PLUGIN_GITHUB_TOKEN=${GITHUB_TOKEN}
@@ -55,7 +55,7 @@ slack:
 
 #### Bypass
 
-If a step already exists that is named `notify-before` or `notify-after`, this config plugin will not prepend or append Slack notifications to the pipeline.
+If a step already exists that is named `slack-before` or `slack-after`, this conversion plugin will not prepend or append Slack notifications to the pipeline.
 
 ### Environment Variable Support
 
@@ -72,7 +72,7 @@ Here's a full list of environment variables supported by the plugin:
     
 ### Pipeline Support
 
-This plugin also supports [microadam's config pipeline plugin](https://github.com/microadam/drone-config-plugin-pipeline).
+This plugin also supports [our convert plugin pipeline](https://github.com/goodwillaz/drone-convert-plugin-pipeline).
 
 ### License
 
